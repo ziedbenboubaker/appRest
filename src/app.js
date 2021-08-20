@@ -4,13 +4,24 @@ const helmet = require("helmet");
 const compression = require("compression");
 const cors = require("cors");
 const logger = require("morgan");
+const mongoose = require("mongoose");
 
-if (!dotenv.config()) throw new Error("No .env file!");
-const connectDB = require("./config");
-const checkHandler = require("./midleware/checkHandler");
+dotenv.config();
+
 const { listRouter, itemRouter } = require("./routers");
 
-connectDB().then();
+const mongooseOpts = {
+  useCreateIndex: true,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: true,
+  dbName: process.env.DB_NAME,
+};
+
+mongoose
+  .connect(process.env.MONGO_DB_URI, mongooseOpts)
+  .then(() => console.log("Connected to database"))
+  .catch(() => console.log("Failed connect to database"));
 
 const app = express();
 
@@ -24,11 +35,9 @@ app.use(logger("dev"));
 app.use("/api/lists", listRouter);
 app.use("/api/items", itemRouter);
 
-app.use((req, res, next) => {
-  const error = new Error("Page not founded");
-  error.status = 404;
-  next(error);
+app.use((err, req, res, next) => {
+  console.log(err);
+  res.status(err.statusCode || 500).end(JSON.stringify(err));
 });
 
-app.use(checkHandler);
 module.exports = app;

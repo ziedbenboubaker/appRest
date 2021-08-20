@@ -4,4 +4,4 @@ const { ListController } = require("../controllers");
 
 module.exports = Router()
   .post("/", ListController.addList)
-  .get("/", ListController.getLists);
+  .get("/:name", ListController.getList);
