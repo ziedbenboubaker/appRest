@@ -5,7 +5,9 @@ async function addItem(request, response, next) {
     const itemData = request.body;
     const item = await new ItemModel(itemData).save();
 
-    response.end(JSON.stringify(item));
+    setTimeout(() => {
+      response.end(JSON.stringify(item));
+    }, 3000);
   } catch (e) {
     next(e);
   }
@@ -22,7 +24,9 @@ async function removeItem(request, response, next) {
 
     await item.remove();
 
-    response.end(JSON.stringify(item));
+    setTimeout(() => {
+      response.end(JSON.stringify(item));
+    }, 3000);
   } catch (e) {
     next(e);
   }
